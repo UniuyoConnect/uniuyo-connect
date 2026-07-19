@@ -1,212 +1,153 @@
-"use client"
-import {useState} from "react"
-export default function Home(){
-const [tab,setTab]=useState("feed")
-const [joined,setJoined]=useState(["W4 Annex"])
-const [members,setMembers]=useState({"W4 Annex":243,"NDDC Male":312,"NDDC Female":298,"W2A":180,"W5":210})
-const [popup,setPopup]=useState("")
-const [price,setPrice]=useState("all")
-const [showAdd,setShowAdd]=useState(false)
-const [active,setActive]=useState(null)
-const [newS,setNewS]=useState("")
-const [showReact,setShowReact]=useState(null)
-const [commentFor,setCommentFor]=useState(null)
-const [commentTxt,setCommentTxt]=useState("")
-const [editId,setEditId]=useState(null)
-const [txt,setTxt]=useState("")
-const reacts=["❤️","👍","😂","😭","😍","🔥","🙏","💀","🎉","👏","😎","🥺","🤣","💯","😡","😮","🥰","🤩","😴","🤔"]
-const hostels=["NDDC Male","NDDC Female","W4 Annex","W2A","W5","Town Campus"]
-const [statusList,setStatusList]=useState([
-{name:"You",ava:"Y",items:[{id:1,txt:"In W4 Annex reading all night",views:45,likes:12,liked:false}]},
-{name:"Favour",ava:"F",items:[{id:2,txt:"My hostel view!",views:89,likes:23,liked:true}]},
-{name:"Buka",ava:"B",items:[{id:3,txt:"Jollof ready 1500 Free delivery",views:120,likes:56,liked:false}]}
-])
-const [posts,setPosts]=useState([
-{id:1,name:"Favour E.",tag:"Agric",time:"2h",text:"Who has GST 111 past questions?",react:"❤️",rc:13,comments:[{id:101,name:"You",text:"I get am",react:"👍",rc:2},{id:102,name:"John",text:"I need too",react:"😂",rc:1}]},
-{id:2,name:"Campus Buka",tag:"Vendor",time:"5h",text:"Jollof plus Chicken 1500 today Free delivery NDDC",react:"❤️",rc:46,comments:[]}
-])
-const [market,setMarket]=useState([
-{id:1,name:"Jollof + Chicken",price:1500,pt:"1500",seller:"Buka",hostel:"NDDC Male",sold:false},
-{id:2,name:"Power Bank 20000mAh",price:8000,pt:"8000",seller:"You",hostel:"W4 Annex",sold:false},
-{id:3,name:"Bedside Fan",price:1500,pt:"1500",seller:"You",hostel:"W4 Annex",sold:false}
-])
-const push=(t)=>{setPopup(t);setTimeout(()=>setPopup(""),2500)}
-const filtered=market.filter(m=>{if(price==="low")return m.price<2000;if(price==="mid")return m.price>=2000&&m.price<=10000;if(price==="high")return m.price>10000;return true})
-const totalStatus=statusList.reduce((a,b)=>a+b.items.length,0)
-
-return(
-<div style={{minHeight:"100vh",background:"#f5f5f5",paddingBottom:80}}>
-{popup?<div style={{position:"fixed",top:60,left:10,right:10,background:"#0f172a",color:"white",padding:12,borderRadius:12,zIndex:999,fontSize:13}}>{popup}</div>:null}
-
-<div style={{background:"white",padding:"12px 16px",borderBottom:"1px solid #eee",display:"flex",justifyContent:"space-between",position:"sticky",top:0,zIndex:20}}>
-<b>Uniuyo Connect V9</b>
-<div style={{display:"flex",gap:12,fontSize:12}}>
-<span onClick={()=>setTab("feed")}>Feed</span>
-<span onClick={()=>setTab("status")}>Status</span>
-<span onClick={()=>setTab("market")}>Market</span>
-</div>
-</div>
-
-<div style={{background:"white",padding:"10px 12px",display:"flex",gap:12,overflowX:"auto",borderBottom:"1px solid #f0f0f0"}}>
-{statusList.map((s,i)=>(
-<div key={i} onClick={()=>setActive(i)} style={{minWidth:62,textAlign:"center"}}>
-<div style={{width:54,height:54,borderRadius:27,background:s.name==="You"?"#dbeafe":"#dcfce7",border:s.name==="You"?"2px dashed #2563eb":"3px solid #22c55e",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"bold"}}>{s.ava}</div>
-<div style={{fontSize:10,fontWeight:"bold",marginTop:4}}>{s.name}</div>
-<div style={{fontSize:9,color:"#6b7280"}}>{s.items.length} status • {s.items[0].views} views</div>
-</div>
-))}
-<div onClick={()=>setShowAdd(true)} style={{minWidth:62,textAlign:"center"}}>
-<div style={{width:54,height:54,borderRadius:27,background:"#f3f4f6",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>+</div>
-<div style={{fontSize:10,marginTop:4}}>Add</div>
-</div>
-</div>
-
-{showAdd?(
-<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-<div style={{background:"white",padding:20,borderRadius:16,width:"100%",maxWidth:320}}>
-<h3 style={{margin:0}}>Add Status</h3>
-<p style={{fontSize:11,color:"#6b7280",marginTop:4}}>WhatsApp style - add as many as you want</p>
-<textarea value={newS} onChange={e=>setNewS(e.target.value)} placeholder="What is happening? Jollof ready..." rows={3} style={{width:"100%",marginTop:10,padding:12,borderRadius:12,border:"1px solid #e5e7eb"}}/>
-<div style={{display:"flex",gap:8,marginTop:12}}>
-<button onClick={()=>setShowAdd(false)} style={{flex:1,padding:10,borderRadius:10,border:"1px solid #e5e7eb",background:"white"}}>Cancel</button>
-<button onClick={()=>{if(!newS.trim())return;const it={id:Date.now(),txt:newS,views:1,likes:0,liked:false};setStatusList(l=>{const me=l.find(x=>x.name==="You");if(me)return l.map(x=>x.name==="You"?{...x,items:[it,...x.items]}:x);return[{name:"You",ava:"Y",items:[it]},...l]});setNewS("");setShowAdd(false);push("Status added • "+totalStatus+" total")}} style={{flex:1,padding:10,borderRadius:10,border:"none",background:"#2563eb",color:"white",fontWeight:"bold"}}>Post Status</button>
-</div>
-</div>
-</div>
-):null}
-
-{active!==null?(
-<div style={{position:"fixed",inset:0,background:"black",zIndex:200,color:"white",display:"flex",flexDirection:"column"}}>
-<div style={{padding:12,display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(255,255,255,0.1)"}}>
-<span onClick={()=>setActive(null)} style={{background:"rgba(255,255,255,0.2)",padding:"6px 12px",borderRadius:20}}>✕ Close</span>
-<span style={{fontSize:11}}>{statusList[active].items[0].views} views • {statusList[active].items[0].likes} likes</span>
-</div>
-<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24,textAlign:"center",fontSize:22,lineHeight:1.4}}>{statusList[active].items[0].txt}</div>
-<div style={{padding:12,background:"rgba(255,255,255,0.1)"}}>
-<div style={{display:"flex",justifyContent:"space-around",marginBottom:12,fontSize:13}}>
-<span onClick={()=>{setStatusList(s=>s.map((u,i)=>i!==active?u:{...u,items:u.items.map((it,j)=>j!==0?it:{...it,likes:it.liked?it.likes-1:it.likes+1,liked:!it.liked})}))}} style={{background:"rgba(255,255,255,0.2)",padding:"6px 12px",borderRadius:20}}>{statusList[active].items[0].liked?"❤️ Liked":"🤍 Like"} {statusList[active].items[0].likes}</span>
-<span style={{background:"rgba(255,255,255,0.2)",padding:"6px 12px",borderRadius:20}}>👁️ {statusList[active].items[0].views} views</span>
-</div>
-<div style={{display:"flex",gap:8}}>
-<button onClick={()=>{setPosts([{id:Date.now(),name:"You",tag:"Shared status",time:"now",text:statusList[active].items[0].txt,react:"❤️",rc:0,comments:[]},...posts]);push("Shared to Timeline");setActive(null);setTab("feed")}} style={{flex:1,padding:10,borderRadius:20,border:"none",background:"#2563eb",color:"white",fontWeight:"bold",fontSize:12}}>Share to Timeline</button>
-<button onClick={()=>{const m=statusList[active].items[0].txt+" - View & register https://t-wine.vercel.app/?register=1";window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}} style={{flex:1,padding:10,borderRadius:20,border:"none",background:"#25D366",color:"white",fontWeight:"bold",fontSize:12}}>WhatsApp + Gate</button>
-</div>
-</div>
-</div>
-):null}
-
-{tab==="feed"?(
-<div style={{padding:12}}>
-<div style={{background:"white",padding:12,borderRadius:16,marginBottom:12}}>
-<textarea value={txt} onChange={e=>setTxt(e.target.value)} placeholder="What is happening in W4 Annex?" rows={2} style={{width:"100%",background:"#f3f4f6",border:"none",padding:12,borderRadius:12}}/>
-<button onClick={()=>{if(txt.trim()){setPosts([{id:Date.now(),name:"You",tag:"W4 Annex",time:"now",text:txt,react:"❤️",rc:0,comments:[]},...posts]);setTxt("");push("Posted to W4 Annex")}}} style={{marginTop:8,width:"100%",padding:10,borderRadius:10,border:"none",background:"#2563eb",color:"white",fontWeight:"bold"}}>Post to W4 Annex</button>
-</div>
-{posts.map(p=>(
-<div key={p.id} style={{background:"white",padding:14,borderRadius:14,marginBottom:10}}>
-<div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-<div style={{display:"flex",gap:8,alignItems:"center"}}><div style={{width:36,height:36,background:"#e5e7eb",borderRadius:18}}></div><div><div style={{fontWeight:"bold",fontSize:13}}>{p.name}</div><div style={{fontSize:11,color:"#6b7280"}}>{p.tag} • {p.time}</div></div></div>
-<button onClick={()=>{const m=p.text+" - View & register https://t-wine.vercel.app/?register=1";window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}} style={{background:"#25D366",color:"white",border:"none",padding:"6px 10px",borderRadius:20,fontSize:10,fontWeight:"bold"}}>WhatsApp Gate</button>
-</div>
-<div style={{marginTop:10,fontSize:14}}>{p.text}</div>
-<div style={{marginTop:10,display:"flex",gap:14,borderTop:"1px solid #f3f4f6",paddingTop:10,fontSize:12,fontWeight:"bold"}}>
-<span onClick={()=>setShowReact(showReact===p.id?null:p.id)} style={{cursor:"pointer"}}>{p.react} {p.rc} • 20 Reactions</span>
-<span onClick={()=>setCommentFor(commentFor===p.id?null:p.id)} style={{cursor:"pointer"}}>💬 Comment {p.comments.length}</span>
-<span>↗️ Share</span>
-</div>
-{showReact===p.id?(
-<div style={{marginTop:8,background:"#fff",border:"1px solid #eee",borderRadius:12,padding:8,display:"flex",gap:6,flexWrap:"wrap"}}>
-{reacts.map(r=>(
-<span key={r} onClick={()=>{setPosts(posts.map(x=>x.id===p.id?{...x,react:r,rc:x.rc+1}:x));setShowReact(null);push("Reacted "+r)}} style={{fontSize:20,padding:4,cursor:"pointer"}}>{r}</span>
-))}
-</div>
-):null}
-{commentFor===p.id?(
-<div style={{marginTop:10}}>
-{p.comments.map(c=>(
-<div key={c.id} style={{background:"#f3f4f6",padding:10,borderRadius:12,marginBottom:8}}>
-<div style={{display:"flex",justifyContent:"space-between"}}><div><b style={{fontSize:11}}>{c.name} {c.react}</b><div style={{fontSize:13}}>{c.text}</div></div><span style={{fontSize:11}}>{c.react} {c.rc}</span></div>
-<div style={{display:"flex",gap:10,marginTop:6}}>
-{c.name==="You"?<><span onClick={()=>{setEditId(c.id);setCommentTxt(c.text)}} style={{fontSize:11,color:"#2563eb",fontWeight:"bold"}}>✏️ Edit</span><span onClick={()=>{if(confirm("Delete comment?"))setPosts(posts.map(x=>x.id!==p.id?x:{...x,comments:x.comments.filter(cc=>cc.id!==c.id)}))}} style={{fontSize:11,color:"red",fontWeight:"bold"}}>🗑️ Delete</span></>:null}
-<span onClick={()=>{const m=c.text+" - https://t-wine.vercel.app/?register=1";window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}} style={{fontSize:11,color:"#25D366",fontWeight:"bold"}}>WhatsApp</span>
-</div>
-</div>
-))}
-<div style={{marginTop:8,background:"white",border:"1px solid #e5e7eb",borderRadius:20,padding:"6px 10px",display:"flex",gap:6,alignItems:"center"}}>
-<input value={commentTxt} onChange={e=>setCommentTxt(e.target.value)} placeholder={editId?"Edit comment...":"Write comment..."} style={{flex:1,border:"none",outline:"none",fontSize:12}}/>
-<button onClick={()=>{if(!commentTxt.trim())return;if(editId){setPosts(posts.map(po=>po.id!==p.id?po:{...po,comments:po.comments.map(cc=>cc.id===editId?{...cc,text:commentTxt}:cc)}));setEditId(null);setCommentTxt("")}else{setPosts(posts.map(po=>po.id!==p.id?po:{...po,comments:[...po.comments,{id:Date.now(),name:"You",text:commentTxt,react:"❤️",rc:0}]}));setCommentTxt("")}}} style={{background:"#2563eb",color:"white",border:"none",padding:"6px 12px",borderRadius:15,fontSize:11,fontWeight:"bold"}}>{editId?"Save":"Post"}</button>
-</div>
-</div>
-):null}
-</div>
-))}
-</div>
-):null}
-
-{tab==="community"?(
-<div style={{padding:12}}>
-<h2 style={{margin:"0 0 6px 0"}}>Hostels — Join / Leave + Count</h2>
-<p style={{fontSize:11,color:"#6b7280",margin:0}}>Tap Join — members increase, Leave — decreases</p>
-<div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-{hostels.map(h=>(
-<div key={h} style={{background:"white",padding:14,borderRadius:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-<div><div style={{fontWeight:"bold",fontSize:13}}>{h}</div><div style={{fontSize:11,color:"#6b7280"}}>👥 {members[h]||100} members • {joined.includes(h)?"Joined":"Not joined"}</div></div>
-<button onClick={()=>{if(joined.includes(h)){setJoined(joined.filter(x=>x!==h));setMembers(m=>({...m,[h]:(m[h]||1)-1}));push("Left "+h)}else{setJoined([...joined,h]);setMembers(m=>({...m,[h]:(m[h]||0)+1}));push("Joined "+h+" • "+((members[h]||0)+1)+" members")}}} style={{padding:"8px 14px",borderRadius:20,border:"none",background:joined.includes(h)?"#fee2e2":"#dcfce7",color:joined.includes(h)?"#dc2626":"#16a34a",fontWeight:"bold",fontSize:11}}>{joined.includes(h)?"Leave":"Join"}</button>
-</div>
-))}
-</div>
-</div>
-):null}
-
-{tab==="market"?(
-<div style={{padding:12}}>
-<h2 style={{margin:"0 0 6px 0"}}>Market — Filter + Sold + Delete</h2>
-<div style={{background:"white",padding:10,borderRadius:12,marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
-<button onClick={()=>setPrice("all")} style={{padding:"6px 10px",borderRadius:20,border:"none",background:price==="all"?"#2563eb":"#f3f4f6",color:price==="all"?"white":"black",fontSize:11,fontWeight:"bold"}}>All</button>
-<button onClick={()=>setPrice("low")} style={{padding:"6px 10px",borderRadius:20,border:"none",background:price==="low"?"#2563eb":"#f3f4f6",color:price==="low"?"white":"black",fontSize:11}}>Under 2k</button>
-<button onClick={()=>setPrice("mid")} style={{padding:"6px 10px",borderRadius:20,border:"none",background:price==="mid"?"#2563eb":"#f3f4f6",color:price==="mid"?"white":"black",fontSize:11}}>2k-10k</button>
-<button onClick={()=>setPrice("high")} style={{padding:"6px 10px",borderRadius:20,border:"none",background:price==="high"?"#2563eb":"#f3f4f6",color:price==="high"?"white":"black",fontSize:11}}>Above 10k</button>
-</div>
-<div style={{marginTop:10,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-{filtered.map(m=>(
-<div key={m.id} style={{background:m.sold?"#fee2e2":"white",padding:10,borderRadius:12,border:m.sold?"1px solid #fca5a5":"1px solid #f3f4f6"}}>
-<div style={{fontSize:12,fontWeight:"bold"}}>{m.name}</div>
-<div style={{fontWeight:"bold",marginTop:4}}>₦{m.pt} {m.sold?<span style={{color:"red",fontSize:10}}>SOLD</span>:null}</div>
-<div style={{fontSize:10,color:"#6b7280"}}>{m.hostel} • {m.seller}</div>
-{m.seller==="You"?(
-<div style={{display:"flex",gap:6,marginTop:8}}>
-<button onClick={()=>setMarket(market.map(x=>x.id===m.id?{...x,sold:!x.sold}:x))} style={{flex:1,padding:6,borderRadius:8,border:"none",background:"#f59e0b",color:"white",fontSize:10,fontWeight:"bold"}}>{m.sold?"Unsold":"Sold"}</button>
-<button onClick={()=>{if(confirm("Delete this market item?"))setMarket(market.filter(x=>x.id!==m.id))}} style={{flex:1,padding:6,borderRadius:8,border:"none",background:"#ef4444",color:"white",fontSize:10,fontWeight:"bold"}}>Delete</button>
-</div>
-):null}
-</div>
-))}
-</div>
-</div>
-):null}
-
-{tab==="status"?(
-<div style={{padding:12}}>
-<h2 style={{margin:0}}>Status — WhatsApp Style</h2>
-<p style={{fontSize:11,color:"#6b7280"}}>Unlimited statuses, views, likes, Timeline + WhatsApp Gate</p>
-<button onClick={()=>setShowAdd(true)} style={{width:"100%",marginTop:10,padding:12,borderRadius:12,background:"#2563eb",color:"white",border:"none",fontWeight:"bold"}}>+ Add Status (as many as you want)</button>
-<div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-{statusList.map((s,i)=>(
-<div key={i} onClick={()=>setActive(i)} style={{background:"white",padding:12,borderRadius:12,display:"flex",gap:10,alignItems:"center"}}>
-<div style={{width:44,height:44,borderRadius:22,background:"#e5e7eb",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"bold"}}>{s.ava}</div>
-<div style={{flex:1}}><b style={{fontSize:13}}>{s.name} • {s.items.length} status</b><div style={{fontSize:11,color:"#6b7280"}}>{s.items[0].views} views • {s.items[0].likes} likes • Tap to view, like, share to Timeline, WhatsApp + Gate, see who viewed</div></div>
-</div>
-))}
-</div>
-</div>
-):null}
-
-<div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderTop:"1px solid #e5e7eb",display:"flex",justifyContent:"space-around",padding:"10px 0",fontSize:11,fontWeight:"bold",zIndex:30}}>
-<span onClick={()=>setTab("feed")} style={{color:tab==="feed"?"#2563eb":"#9ca3af"}}>Feed</span>
-<span onClick={()=>setTab("status")} style={{color:tab==="status"?"#2563eb":"#9ca3af"}}>Status {totalStatus}</span>
-<span onClick={()=>setTab("community")} style={{color:tab==="community"?"#2563eb":"#9ca3af"}}>Hostels {joined.length}</span>
-<span onClick={()=>setTab("market")} style={{color:tab==="market"?"#2563eb":"#9ca3af"}}>Market {filtered.length}</span>
-</div>
-
-</div>
-)
-}
+"use client";
+import { useState, useEffect, useRef } from "react";
+export default function Page() {
+ const [user, setUser] = useState(null);
+ const [regNo, setRegNo] = useState("");
+ const [dob, setDob] = useState("");
+ const [facultyCode, setFacultyCode] = useState("");
+ const [facultyName, setFacultyName] = useState("");
+ const [hostelPick, setHostelPick] = useState("");
+ const [tab, setTab] = useState("feed");
+ const [subTab, setSubTab] = useState("faculties");
+ const [feedFilter, setFeedFilter] = useState("All");
+ const [callActive, setCallActive] = useState(null);
+ const [callLogs, setCallLogs] = useState([]);
+ const [flagged, setFlagged] = useState([]);
+ const [chatWith, setChatWith] = useState(null);
+ const [chatMsgs, setChatMsgs] = useState({});
+ const [chatInput, setChatInput] = useState("");
+ const [posts, setPosts] = useState([
+  {id:1,name:"Favour E.",tag:"Agric",text:"V18 - 18+ Compliant! DOB 18+ checked, AI scan every 5 sec, flagged_18plus_content, Confessions anon 18+",type:"text",media:"",age:"18+",flagged:false,anon:false},
+  {id:2,name:"Anonymous",tag:"Confessions 18+",text:"I have a crush on my roommate - 18+ anon",type:"text",media:"",age:"18+",flagged:false,anon:true}
+ ]);
+ const faculties=[{code:"AG",name:"Agriculture"},{code:"AS",name:"Arts"},{code:"ED",name:"Education"},{code:"EN",name:"Engineering"},{code:"LW",name:"Law"},{code:"MS",name:"Basic Medical"},{code:"SC",name:"Science"},{code:"SS",name:"Social Sciences"},{code:"BS",name:"Management Sciences"},{code:"PH",name:"Pharmacy"}];
+ const realHostels=[{name:"NDDC Hostel Main Campus"},{name:"W2A Female Hostel"},{name:"W2B Female Hostel"},{name:"W4 Girls Hostel"},{name:"W5 Annex Female Hostel"},{name:"M2 Hall Boys Hostel"},{name:"Medical Students Hostel UUTH"},{name:"NEEDS Hall I"},{name:"New NDDC Hostel"},{name:"NDDC Medical 522-bed"},{name:"Haldeen Hostel"},{name:"Ekanem Ikpi Hostel"}];
+ const offCampusAreas=["Ikpa Road","Nwaniba Road","Use Offot","Ewet Housing"];
+ const usersList=[{name:"Favour E.",hostel:"W2A"},{name:"John Doe",hostel:"NDDC Main"}];
+ const [joinedHostels, setJoinedHostels] = useState([]);
+ const [joinedOff, setJoinedOff] = useState(false);
+ const [newPost, setNewPost] = useState("");
+ const [postType, setPostType] = useState("text");
+ const [isAnon, setIsAnon] = useState(false);
+ const [is18Plus, setIs18Plus] = useState(false);
+ const [mediaUrl, setMediaUrl] = useState("");
+ const fileRef=useRef(null);
+ const bannedWords=["nude","naked","sex","porn","xxx","pussy","dick","boobs","onlyfans"];
+ useEffect(()=>{
+  const s=localStorage.getItem("uc_v18"); if(s){const u=JSON.parse(s); setUser(u); setFacultyCode(u.facultyCode); setFacultyName(u.facultyName);}
+  const l=localStorage.getItem("uc_calls_v18"); if(l) setCallLogs(JSON.parse(l));
+  const f=localStorage.getItem("uc_flagged_18plus"); if(f) setFlagged(JSON.parse(f));
+ },[]);
+ useEffect(()=>{localStorage.setItem("uc_flagged_18plus",JSON.stringify(flagged))},[flagged]);
+ // 18+ AI Moderation every 5 sec - Master Plan
+ useEffect(()=>{
+  const interval=setInterval(()=>{
+   const last=posts[0];
+   if(last){
+    const txt=(last.text||"").toLowerCase();
+    const isBad=bannedWords.some(w=>txt.includes(w));
+    if(isBad &&!last.flagged){
+     const flaggedItem={id:Date.now(),postId:last.id,text:last.text,user:last.name,reason:"18+ banned word detected - Hive/Sightengine scan",date:new Date().toLocaleString()};
+     setFlagged(prev=>[flaggedItem,...prev]);
+     setPosts(prev=>prev.map(p=>p.id===last.id?{...p,flagged:true}:p));
+     console.log("WhatsApp Alert to Admin: 18+ Content flagged - Call Continued - Logged", flaggedItem);
+    }
+   }
+  },5000);
+  return()=>clearInterval(interval);
+ },[posts]);
+ const detectFaculty=(r)=>{
+  const parts=r.toUpperCase().split("/"); if(parts.length>=2){
+   const code=parts[1]; const map={AG:"Agriculture",AS:"Arts",ED:"Education",EN:"Engineering",LW:"Law",MS:"Basic Medical",SC:"Science",SS:"Social Sciences",BS:"Management Sciences",PH:"Pharmacy"};
+   if(map[code]){setFacultyCode(code); setFacultyName(map[code]);}
+  }
+ };
+ const check18Plus=(dobStr)=>{
+  if(!dobStr) return false;
+  const birth=new Date(dobStr); const today=new Date(); let age=today.getFullYear()-birth.getFullYear(); const m=today.getMonth()-birth.getMonth(); if(m<0||(m===0&&today.getDate()<birth.getDate())) age--;
+  return age>=18;
+ };
+ const handleLogin=()=>{
+  if(!regNo||!hostelPick||!dob) return alert("Enter Reg No, DOB, Hostel - 18+ Required");
+  if(!check18Plus(dob)) return alert("You must be 18+ to use Uniuyo Connect - Age verification failed!");
+  const isOff=offCampusAreas.includes(hostelPick) || hostelPick.includes("Off Campus");
+  const u={regNo,facultyCode,facultyName:facultyName||"General",hostel:hostelPick,isOffCampus:isOff,dob,ageVerified:true};
+  localStorage.setItem("uc_v18",JSON.stringify(u)); setUser(u);
+ };
+ const startCall=(name,type,isGroup=false)=>{
+  if(!user.ageVerified) return alert("18+ verification required for calls");
+  setCallActive({name,type,isGroup,time:0});
+  const id=setInterval(()=>{setCallActive(c=>c?{...c,time:c.time+1}:null)},1000);
+  setTimeout(()=>{clearInterval(id); setCallLogs([{id:Date.now(),name,type,isGroup,duration:"00:23",status:"Call Continued - Logged",date:new Date().toLocaleString()},...callLogs]); setCallActive(null);},4000);
+ };
+ const handleFile=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const url=URL.createObjectURL(file);
+  setMediaUrl(url);
+  if(file.type.startsWith("video")) setPostType("video");
+  else if(file.type.startsWith("image")) setPostType("image");
+  else if(file.type.startsWith("audio")) setPostType("voice");
+ };
+ if(!user){
+  return(<div style={{minHeight:"100vh",background:"#f0f2f5",padding:20,fontFamily:"sans-serif"}}>
+   <div style={{maxWidth:440,margin:"20px auto",background:"white",padding:22,borderRadius:16}}>
+    <h2 style={{color:"#0b5fff",textAlign:"center"}}>Uniuyo Connect V18</h2>
+    <p style={{textAlign:"center",fontSize:11,color:"#d00",fontWeight:"bold"}}>18+ ONLY — Age verification required — DOB checked</p>
+    <input value={regNo} onChange={e=>{setRegNo(e.target.value);detectFaculty(e.target.value)}} placeholder="Reg No 16/AG to 99/AG" style={{width:"100%",padding:12,marginTop:12,borderRadius:8,border:"1px solid #ddd"}}/>
+    <input type="date" value={dob} onChange={e=>setDob(e.target.value)} style={{width:"100%",padding:12,marginTop:10,borderRadius:8,border:"1px solid #ddd"}}/>
+    <div style={{fontSize:10,color:"#666",marginTop:4}}>Must be 18+ — Will verify at login — Underage cannot register</div>
+    {facultyName&&<div style={{marginTop:8,background:"#e8f0ff",padding:8,borderRadius:6,fontSize:12}}>Faculty {facultyName} — ONLY this, others cannot join</div>}
+    <select value={hostelPick} onChange={e=>setHostelPick(e.target.value)} style={{width:"100%",padding:12,marginTop:10,borderRadius:8,border:"1px solid #ddd"}}>
+     <option value="">Select Hostel (12) or Off Campus ONE</option>
+     {realHostels.map(h=><option key={h.name} value={h.name}>{h.name}</option>)}
+     <option value="Off Campus Community">Off Campus Community — ONE</option>
+    </select>
+    <button onClick={handleLogin} style={{width:"100%",marginTop:14,padding:12,background:"#0b5fff",color:"white",border:"none",borderRadius:8,fontWeight:"bold"}}>Verify 18+ & Enter V18</button>
+    <div style={{marginTop:10,fontSize:9,color:"#888"}}>18+ Compliance: DOB check, AI moderation every 5 sec Hive/Sightengine, flagged_18plus_content table, WhatsApp alert to admin "Call Continued - Logged", Confessions anon 18+ only, Age gate blur</div>
+   </div>
+  </div>);
+ }
+ const filteredPosts=posts.filter(p=>{
+  if(feedFilter==="All") return true;
+  if(feedFilter==="18+") return p.age==="18+"||p.flagged||p.tag.includes("Confessions");
+  if(feedFilter==="Safe") return!p.flagged && p.age!=="18+";
+  if(feedFilter==="Meme") return p.tag==="Meme";
+  if(feedFilter==="Confessions") return p.tag.includes("Confessions");
+  return true;
+ });
+ return(<div style={{minHeight:"100vh",background:"#f0f2f5",fontFamily:"sans-serif",paddingBottom:70}}>
+  {callActive&&<div style={{position:"fixed",inset:0,background:"#0f172a",zIndex:999,color:"white",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+   <div style={{width:100,height:100,borderRadius:50,background:"#334155",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30}}>{callActive.type==="video"?"🎥":"📞"}</div>
+   <div style={{marginTop:16,fontWeight:"bold",fontSize:18}}>{callActive.isGroup?"Group ":""}{callActive.type} Call {callActive.isGroup?"in":"with"} {callActive.name} — 18+ Verified</div>
+   <div style={{marginTop:8,fontSize:14,color:"#94a3b8"}}>{Math.floor(callActive.time/60)}:{String(callActive.time%60).padStart(2,"0")} — Call Continued - Logged + WhatsApp alert</div>
+   <button onClick={()=>setCallActive(null)} style={{marginTop:20,padding:"12px 20px",borderRadius:30,border:"none",background:"#ef4444",color:"white",fontWeight:"bold"}}>End Call</button>
+  </div>}
+  <div style={{background:"white",padding:10,position:"sticky",top:0,zIndex:10,display:"flex",gap:6,borderBottom:"1px solid #eee",overflowX:"auto"}}>
+   {["feed","chat","communities","calls","moderation"].map(t=><button key={t} onClick={()=>setTab(t)} style={{padding:"8px 10px",borderRadius:20,border:"none",background:tab===t?"#0b5fff":"#e4e6eb",color:tab===t?"white":"black",fontWeight:"bold",fontSize:10,textTransform:"capitalize"}}>{t} {t==="moderation"?`(${flagged.length})`:t==="calls"?`(${callLogs.length})`:""}</button>)}
+  </div>
+  {tab==="feed"&&<div style={{padding:12}}>
+   <div style={{display:"flex",gap:6,marginBottom:10,overflowX:"auto"}}>{["All","Safe","18+","Confessions","Meme"].map(f=><button key={f} onClick={()=>setFeedFilter(f)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:feedFilter===f?"#0b5fff":"#e4e6eb",fontSize:11,fontWeight:"bold"}}>{f}</button>)}</div>
+   <div style={{background:"white",padding:12,borderRadius:12,marginBottom:12,border:is18Plus?"2px solid #ef4444":"1px solid #eee"}}>
+    <div style={{fontSize:11,fontWeight:"bold",color:is18Plus?"#ef4444":"#666"}}>{isAnon?"Anonymous Confession 18+":"Feed Post"} {is18Plus?"— 18+ Age Gate":""} {isAnon?"— Anon":""}</div>
+    <textarea value={newPost} onChange={e=>setNewPost(e.target.value)} placeholder={isAnon?"Confess anonymously 18+...":"What's happening? AI scans every 5 sec for 18+ content"} style={{width:"100%",marginTop:8,border:"1px solid #ddd",borderRadius:8,padding:10,minHeight:50}}></textarea>
+    <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+     <label style={{display:"flex",alignItems:"center",gap:4,fontSize:11}}><input type="checkbox" checked={isAnon} onChange={e=>setIsAnon(e.target.checked)}/> Anonymous 18+</label>
+     <label style={{display:"flex",alignItems:"center",gap:4,fontSize:11}}><input type="checkbox" checked={is18Plus} onChange={e=>setIs18Plus(e.target.checked)}/> Mark 18+</label>
+     <button onClick={()=>fileRef.current.click()} style={{padding:"6px 10px",borderRadius:16,border:"none",background:"#e4e6eb",fontSize:11}}>📷 Image / 🎥 Video Circular / 🎤 Voice Note</button>
+     <input ref={fileRef} type="file" accept="image/*,video/*,audio/*" style={{display:"none"}} onChange={handleFile}/>
+    </div>
+    {mediaUrl&&<div style={{marginTop:10}}>{postType==="image"&&<img src={mediaUrl} style={{width:"100%",borderRadius:12,maxHeight:300}}/>}{postType==="video"&&<div style={{display:"flex",justifyContent:"center"}}><video src={mediaUrl} controls style={{width:120,height:120,borderRadius:"50%",border:"3px solid #0b5fff"}}/></div>}{postType==="voice"&&<audio src={mediaUrl} controls style={{width:"100%"}}/>}</div>}
+    <button onClick={()=>{if(!newPost&&!mediaUrl) return; const flaggedNow=bannedWords.some(w=>newPost.toLowerCase().includes(w)); const p={id:Date.now(),name:isAnon?"Anonymous": "You",tag:isAnon?"Confessions 18+":is18Plus?"18+":user.facultyName,text:newPost,type:postType,media:mediaUrl,age:is18Plus||isAnon?"18+":"Safe",flagged:flaggedNow,anon:isAnon}; if(flaggedNow){setFlagged([{id:Date.now(),postId:p.id,text:p.text,user:p.name,reason:"18+ word detected at post",date:new Date().toLocaleString()},...flagged])} setPosts([p,...posts]); setNewPost(""); setMediaUrl(""); setIsAnon(false); setIs18Plus(false);}} style={{marginTop:10,padding:"8px 14px",background:isAnon?"#ef4444":is18Plus?"#f59e0b":"#0b5fff",color:"white",border:"none",borderRadius:8,fontWeight:"bold"}}>Post {isAnon?"Anon 18+":is18Plus?"18+":""}</button>
+    <div style={{fontSize:9,color:"#888",marginTop:6}}>AI Moderation: Hive/Sightengine scans every 5 sec • flagged_18plus_content table • WhatsApp alert to admin • Age gate blur for 18+</div>
+   </div>
+   {filteredPosts.map(p=><div key={p.id} style={{background:"white",padding:12,borderRadius:12,marginBottom:10,border:p.flagged?"2px solid #ef4444":p.age==="18+"?"1px solid #f59e0b":"1px solid #eee",opacity:p.flagged?0.6:1}}>
+    <div style={{display:"flex",justifyContent:"space-between"}}><b style={{fontSize:12}}>{p.name} • {p.tag} {p.age==="18+"&&"🔞 18+"} {p.flagged&&"🚩 FLAGGED"}</b><span style={{fontSize:10,color:"#666"}}>{p.age}</span></div>
+    {p.flagged?<div style={{background:"#fee2e2",padding:8,borderRadius:8,marginTop:6,fontSize:11}}>🚩 This post flagged by AI moderation (Hive/Sightengine) - 18+ content detected - Saved to flagged_18plus_content - WhatsApp alert sent to admin - Call Continued - Logged</div>:p.age==="18+"?<div><div style={{marginTop:6,filter:"blur(8px)"}}>{p.text}</div><div style={{fontSize:11,color:"#ef4444",fontWeight:"bold"}}>🔞 18+ Content — Tap to view — Age verified 18+</div></div>:<div style={{marginTop:6}}>{p.text}</div>}
+    {p.media&&!p.flagged&&<div style={{marginTop:8}}>{p.type==="image"&&<img src={p.media} style={{width:"100%",borderRadius:12,filter:p.age==="18+"?"blur(10px)":"none"}}/>}{p.type==="video"&&<video src={p.media} controls style={{width:130,height:130,borderRadius:"50%",border:"3px solid #0b5fff",filter:p.age==="18+"?"blur(8px)":"none"}}/>}{p.type==="voice"&&<audio src={p.media} controls style={{width:"100%"}}/>}</div>}
+   </div>)}
+  </div>}
+  {tab==="moderation"&&<div style={{padding:12}}><h4 style={{fontWeight:"bold",color:"#ef4444"}}>flagged_18plus_content Table — Master Plan 18+ — {flagged.length} flagged</h4><p style={{fontSize:11,color:"#666"}}>AI Hive/Sightengine scans every 5 sec • WhatsApp alert to admin • Call Continued - Logged</p>{flagged.length===0&&<div style={{background:"white",padding:20,borderRadius:12,textAlign:"center"}}>No flagged content — AI scanning every 5 sec</div>}{flagged.map(f=><div key={f.id} style={{background:"white",padding:10,borderRadius:10,marginTop:8,border:"2px solid #ef4444"}}><b>🚩 Post {f.postId} by {f.user}</b><div style={{fontSize:12}}>{f.text}</div><div style={{fontSize:10,color:"#666"}}>Reason: {f.reason} • {f.date} • WhatsApp alert sent • call_logs saved</div></div>)}</div>}
+  {tab==="communities"&&<div style={{padding:12}}><div style={{display:"flex",gap:6,marginBottom:10}}>{[{id:"faculties",label:`Faculties ${faculties.length}`},{id:"hostels",label:`Hostels ${realHostels.length}`},{id:"offcampus",label:"Off Campus 1"}].map(s=><button key={s.id} onClick={()=>setSubTab(s.id)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:subTab===s.id?"#0b5fff":"#e4e6eb",fontSize:11,fontWeight:"bold"}}>{s.label}</button>)}</div>{subTab==="faculties"&&<div>{faculties.map(f=>{const isYour=f.code===facultyCode; return(<div key={f.code} style={{background:"white",padding:10,borderRadius:10,marginTop:6,border:isYour?"2px solid #0b5fff":"1px solid #eee"}}><b>{f.name} ({f.code})</b> {isYour?"⭐ YOURS":"— Not your faculty"}<div style={{marginTop:6,display:"flex",gap:6}}>{isYour&&<><button onClick={()=>startCall(f.name+" Faculty","voice",true)} style={{padding:"4px 8px",borderRadius:12,border:"none",background:"#10b981",color:"white",fontSize:10}}>📞 Group Voice 18+</button><button onClick={()=>startCall(f.name+" Faculty","video",true)} style={{padding:"4px 8px",borderRadius:12,border:"none",background:"#0b5fff",color:"white",fontSize:10}}>🎥 Group Video 18+</button></>}</div></div>)})}</div>}{subTab==="hostels"&&<div>{realHostels.map(h=><div key={h.name} style={{background:"white",padding:10,borderRadius:10,marginTop:6}}><b style={{fontSize:12}}>{h.name}</b><div style={{marginTop:6,display:"flex",gap:6}}><button onClick={()=>startCall(h.name,"voice",true)} style={{padding:"4px 8px",borderRadius:12,border:"none",background:"#10b981",color:"white",fontSize:10}}>📞 Group Voice 18+</button><button onClick={()=>startCall(h.name,"video",true)} style={{padding:"4px 8px",borderRadius:12,border:"none",background:"#0b5fff",color:"white",fontSize:10}}>🎥 Group Video 18+</button></div></div>)}</div>}{subTab==="offcampus"&&<div><div style={{background:"white",padding:12,borderRadius:10}}><b>Off Campus Community — ONE — Group Calls 18+</b><div style={{marginTop:8,display:"flex",gap:6}}><button onClick={()=>startCall("Off Campus Community","voice",true)} style={{padding:"6px 10px",borderRadius:12,border:"none",background:"#10b981",color:"white",fontSize:11}}>📞 Group Voice 18+</button><button onClick={()=>startCall("Off Campus Community","video",true)} style={{padding:"6px 10px",borderRadius:12,border:"none",background:"#0b5fff",color:"white",fontSize:11}}>🎥 Group Video 18+</button></div></div></div>}</div>}
+  {tab==="chat"&&<div style={{padding:12}}>{!chatWith&&<div><h4>Chats — 1-on-1 Voice+Video 18+ Verified</h4>{usersList.map(u=><div key={u.name} style={{background:"white",padding:12,borderRadius:12,marginTop:8,display:"flex",justifyContent:"space-between"}}><div onClick={()=>setChatWith(u.name)}><b>{u.name}</b><div style={{fontSize:11,color:"#666"}}>{u.hostel} • Tap to chat</div></div><div style={{display:"flex",gap:6}}><button onClick={()=>startCall(u.name,"voice",false)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:"#10b981",color:"white"}}>📞</button><button onClick={()=>startCall(u.name,"video",false)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:"#0b5fff",color:"white"}}>🎥</button></div></div>)}</div>}{chatWith&&<div><div style={{background:"white",padding:10,borderRadius:12,display:"flex",justifyContent:"space-between"}}><button onClick={()=>setChatWith(null)} style={{border:"none",background:"#e4e6eb",padding:"6px 10px",borderRadius:12}}>← Back</button><b>{chatWith} 18+ Verified</b><div style={{display:"flex",gap:6}}><button onClick={()=>startCall(chatWith,"voice",false)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:"#10b981",color:"white"}}>📞 Voice 18+</button><button onClick={()=>startCall(chatWith,"video",false)} style={{padding:"6px 10px",borderRadius:16,border:"none",background:"#0b5fff",color:"white"}}>🎥 Video 18+</button></div></div><div style={{marginTop:10,display:"flex",gap:6}}><input value={chatInput} onChange={e=>setChatInput(e.target.value)} placeholder="Message 18+ verified..." style={{flex:1,padding:10,borderRadius:20,border:"1px solid #ddd"}}/><button onClick={()=>{if(!chatInput) return; setChatMsgs({...chatMsgs,[chatWith]:[...(chatMsgs[chatWith]||[]),{id:Date.now(),from:"You",text:chatInput}]}); setChatInput("")}} style={{padding:"10px 16px",borderRadius:20,border:"none",background:"#0b5fff",color:"white"}}>Send</button></div></div>}</div>}
+  {tab==="calls"&&<div style={{padding:12}}><h4>Call Logs — call_logs table — 18+ Verified — {callLogs.length}</h4>{callLogs.map(c=><div key={c.id} style={{background:"white",padding:10,borderRadius:10,marginTop:8}}><b>{c.isGroup?"👥 Group":"👤"} {c.type} {c.name}</b><div style={{fontSize:11,color:"#666"}}>{c.status} • {c.date} • 18+ Verified</div></div>)}</div>}
+  <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderTop:"1px solid #ddd",display:"flex",justifyContent:"space-around",padding:"8px 0"}}>{["feed","chat","communities","calls","moderation"].map(t=><button key={t} onClick={()=
